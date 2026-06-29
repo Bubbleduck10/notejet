@@ -76,6 +76,10 @@ async function route(request, env, ctx) {
       const b = await safeJson(request);
       return auth.verifyCode(env, b.email, b.code, b.clientId);
     }
+    case "/auth/google": {
+      const b = await safeJson(request);
+      return auth.googleAuth(env, b.idToken, b.clientId);
+    }
     case "/billing/checkout": {
       const who = await auth.resolvePrincipal(request, env);
       const b = await safeJson(request);

@@ -20,8 +20,8 @@ export default function Navbar({ view, go, account, onSignIn, onSignOut }) {
         </nav>
 
         <div className="nav-account">
-          {account.creditsRemaining != null && (
-            <span className="badge">{account.creditsRemaining} cr</span>
+          {account.signedIn && account.creditsRemaining != null && (
+            <span className="badge">{account.creditsRemaining} credits</span>
           )}
           {account.signedIn ? (
             <>

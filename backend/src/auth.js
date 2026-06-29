@@ -1,5 +1,5 @@
 // Email one-time-code auth. No passwords. Works identically for extension/web/iOS.
-import { json, sha256Hex, signSession, verifySession, FREE_CREDITS } from "./util.js";
+import { json, sha256Hex, signSession, verifySession, FREE_CREDITS, b64urlToBytes } from "./util.js";
 
 const CODE_TTL_MS = 10 * 60 * 1000;
 
@@ -88,6 +88,54 @@ export async function verifyCode(env, email, code, clientId) {
   const remaining = await mergeAnonIntoUser(env, userId, clientId);
   const token = await signSession(env.AUTH_SECRET, { sub: userId, email });
   return json({ token, email, creditsRemaining: remaining });
+}
+
+// Google Sign-In: verify the Google ID token server-side, then issue our session
+// (same path as the email flow). GOOGLE_CLIENT_ID must be set in the Worker env.
+export async function googleAuth(env, idToken, clientId) {
+  const payload = await verifyGoogleIdToken(idToken, env.GOOGLE_CLIENT_ID);
+  if (!payload) return json({ error: "Google sign-in failed" }, 401);
+  if (!payload.email || payload.email_verified === false) {
+    return json({ error: "Google email not verified" }, 401);
+  }
+  const email = payload.email.toLowerCase();
+  const userId = await ensureUser(env, email);
+  const remaining = await mergeAnonIntoUser(env, userId, clientId);
+  const token = await signSession(env.AUTH_SECRET, { sub: userId, email });
+  return json({ token, email, creditsRemaining: remaining });
+}
+
+async function verifyGoogleIdToken(idToken, clientId) {
+  if (!idToken || !clientId) return null;
+  try {
+    const [h, p, s] = idToken.split(".");
+    if (!h || !p || !s) return null;
+    const header = JSON.parse(new TextDecoder().decode(b64urlToBytes(h)));
+    const certs = await (await fetch("https://www.googleapis.com/oauth2/v3/certs")).json();
+    const jwk = (certs.keys || []).find((k) => k.kid === header.kid);
+    if (!jwk) return null;
+    const key = await crypto.subtle.importKey(
+      "jwk",
+      jwk,
+      { name: "RSASSA-PKCS1-v1_5", hash: "SHA-256" },
+      false,
+      ["verify"],
+    );
+    const ok = await crypto.subtle.verify(
+      "RSASSA-PKCS1-v1_5",
+      key,
+      b64urlToBytes(s),
+      new TextEncoder().encode(`${h}.${p}`),
+    );
+    if (!ok) return null;
+    const payload = JSON.parse(new TextDecoder().decode(b64urlToBytes(p)));
+    if (payload.iss !== "accounts.google.com" && payload.iss !== "https://accounts.google.com") return null;
+    if (payload.aud !== clientId) return null;
+    if (!payload.exp || payload.exp < Math.floor(Date.now() / 1000)) return null;
+    return payload;
+  } catch {
+    return null;
+  }
 }
 
 async function ensureUser(env, email) {

@@ -53,7 +53,7 @@ function b64urlEncode(bytes) {
   return btoa(bin).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
 }
 
-function b64urlToBytes(str) {
+export function b64urlToBytes(str) {
   str = str.replace(/-/g, "+").replace(/_/g, "/");
   const bin = atob(str);
   const out = new Uint8Array(bin.length);

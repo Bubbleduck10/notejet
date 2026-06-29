@@ -38,6 +38,7 @@ export const api = {
   me: () => post("/me", {}),
   requestCode: (email) => post("/auth/request", { email }, false),
   verifyCode: (email, code) => post("/auth/verify", { email, code, clientId: clientId() }, false),
+  googleAuth: (idToken) => post("/auth/google", { idToken, clientId: clientId() }, false),
   generate: (payload) => post("/generate", payload),
   checkout: (plan) => post("/billing/checkout", { plan }),
   listDecks: () => post("/decks/list", {}),

@@ -328,6 +328,10 @@ textarea:focus, .field:focus { outline: 2px solid #c7cbff; border-color: var(--i
 .modal-sub { margin: 0 0 18px; color: var(--muted); font-size: 14px; }
 .field { width: 100%; border: 1px solid var(--line); border-radius: 12px; padding: 12px; font: inherit; margin-bottom: 10px; }
 .modal-msg { margin: 12px 0 0; color: var(--muted); font-size: 14px; text-align: center; }
+.gbtn { display: flex; justify-content: center; margin-bottom: 14px; }
+.divider { display: flex; align-items: center; text-align: center; color: var(--muted); font-size: 13px; margin: 4px 0 14px; }
+.divider::before, .divider::after { content: ""; flex: 1; border-top: 1px solid var(--line); }
+.divider span { padding: 0 10px; }
 
 /* ---------- Footer ---------- */
 .footer { border-top: 1px solid var(--line); background: #fff; padding: 22px 0; }
