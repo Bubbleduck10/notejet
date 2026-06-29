@@ -80,6 +80,11 @@ async function route(request, env, ctx) {
       const b = await safeJson(request);
       return auth.googleAuth(env, b.idToken, b.clientId);
     }
+    case "/auth/username": {
+      const who = await auth.resolvePrincipal(request, env);
+      const b = await safeJson(request);
+      return auth.setUsername(env, who, b.username);
+    }
     case "/billing/checkout": {
       const who = await auth.resolvePrincipal(request, env);
       const b = await safeJson(request);
@@ -89,9 +94,17 @@ async function route(request, env, ctx) {
       const who = await auth.resolvePrincipal(request, env);
       if (!who) return json({ error: "No identity" }, 400);
       const acct = await getOrCreateAccount(env, who.principal);
+      let username = null;
+      if (who.userId) {
+        const u = await env.DB.prepare("SELECT username FROM users WHERE id = ?")
+          .bind(who.userId)
+          .first();
+        username = u?.username || null;
+      }
       return json({
         signedIn: !!who.userId,
         email: who.email || null,
+        username,
         tier: acct.tier,
         creditsRemaining: acct.credits,
       });

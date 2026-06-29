@@ -86,8 +86,7 @@ export async function verifyCode(env, email, code, clientId) {
 
   const userId = await ensureUser(env, email);
   const remaining = await mergeAnonIntoUser(env, userId, clientId);
-  const token = await signSession(env.AUTH_SECRET, { sub: userId, email });
-  return json({ token, email, creditsRemaining: remaining });
+  return authResponse(env, userId, email, remaining);
 }
 
 // Google Sign-In: verify the Google ID token server-side, then issue our session
@@ -101,8 +100,35 @@ export async function googleAuth(env, idToken, clientId) {
   const email = payload.email.toLowerCase();
   const userId = await ensureUser(env, email);
   const remaining = await mergeAnonIntoUser(env, userId, clientId);
+  return authResponse(env, userId, email, remaining);
+}
+
+// Issue a session and tell the client whether a username still needs to be chosen.
+async function authResponse(env, userId, email, remaining) {
+  const u = await env.DB.prepare("SELECT username FROM users WHERE id = ?").bind(userId).first();
+  const username = u?.username || null;
   const token = await signSession(env.AUTH_SECRET, { sub: userId, email });
-  return json({ token, email, creditsRemaining: remaining });
+  return json({ token, email, username, needsUsername: !username, creditsRemaining: remaining });
+}
+
+// Set the signed-in user's username (3–20 chars; letters, numbers, underscore; unique).
+export async function setUsername(env, who, raw) {
+  if (!who?.userId) return json({ error: "Sign in" }, 401);
+  const username = String(raw || "").trim();
+  if (!/^[a-zA-Z0-9_]{3,20}$/.test(username)) {
+    return json({ error: "Username must be 3–20 letters, numbers, or underscores." }, 400);
+  }
+  try {
+    await env.DB.prepare("UPDATE users SET username = ? WHERE id = ?")
+      .bind(username, who.userId)
+      .run();
+  } catch (e) {
+    if (String(e.message || "").toUpperCase().includes("UNIQUE")) {
+      return json({ error: "That username is taken." }, 409);
+    }
+    throw e;
+  }
+  return json({ ok: true, username });
 }
 
 async function verifyGoogleIdToken(idToken, clientId) {

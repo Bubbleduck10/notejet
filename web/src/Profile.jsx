@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { api } from "./api.js";
 
-const initialsOf = (email) => (email || "?").slice(0, 2).toUpperCase();
+const initialsOf = (name) => (name || "?").slice(0, 2).toUpperCase();
 
 const fmtDate = (s) =>
   new Date(typeof s === "number" ? s * 1000 : s).toLocaleDateString(undefined, {
@@ -30,9 +30,12 @@ export default function Profile({ account, go }) {
   return (
     <div className="container narrow profile">
       <div className="profile-head">
-        <div className={"avatar lg" + (isPro ? " pro" : "")}>{initialsOf(account.email)}</div>
+        <div className={"avatar lg" + (isPro ? " pro" : "")}>
+          {initialsOf(account.username || account.email)}
+        </div>
         <div className="profile-id">
-          <h1 className="profile-email">{account.email}</h1>
+          <h1 className="profile-name">{account.username || account.email}</h1>
+          {account.username && <p className="profile-email-sub">{account.email}</p>}
           <p className="profile-meta">
             <span className={"pill" + (isPro ? " pill-pro" : "")}>{isPro ? "Pro" : "Free"}</span>
             <span className="muted-sm">{account.creditsRemaining} credits</span>
