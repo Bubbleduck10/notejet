@@ -19,6 +19,11 @@ routes = [
 [vars]
 ALLOWED_ORIGINS = "https://notejet.app,https://www.notejet.app,https://notejet.pages.dev,https://bubbleduck10.github.io,http://localhost:5173"
 APP_URL = "https://notejet.app"
+STRIPE_PRICE_PRO_MONTHLY = "price_1Tnn3sIOyXIv2jNkXaxZT8b8"
+STRIPE_PRICE_PRO_6MO = "price_1Tnn4nIOyXIv2jNkH7AxxkAu"
+STRIPE_PRICE_PRO_ANNUAL = "price_1Tnn4SIOyXIv2jNk23vigB0J"
+STRIPE_PRICE_PACK_100 = "price_1Tnn5FIOyXIv2jNkKSilgavy"
+STRIPE_PRICE_PACK_300 = "price_1Tnn5bIOyXIv2jNkhgFXV7IZ"
 
 # Credits datastore. Create it once with:  wrangler d1 create studymate
 # then paste the printed database_id below.
