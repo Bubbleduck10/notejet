@@ -12,9 +12,11 @@ EMAIL_FROM=NoteJet <onboarding@resend.dev>
 # Stripe (use TEST-mode keys to start). Leave blank until you wire up billing.
 STRIPE_SECRET_KEY=sk_test_...
 STRIPE_WEBHOOK_SECRET=whsec_...
-STRIPE_PRICE_PRO=price_...          # recurring price for the Pro subscription
-STRIPE_PRICE_PACK_100=price_...     # one-time price: 100-credit pack
-STRIPE_PRICE_PACK_300=price_...     # one-time price: 300-credit pack
+STRIPE_PRICE_PRO_MONTHLY=price_...  # Pro, recurring monthly  ($6.99/mo, 500 cr/mo)
+STRIPE_PRICE_PRO_6MO=price_...      # Pro, recurring every 6 months ($40.99, 3500 cr)
+STRIPE_PRICE_PRO_ANNUAL=price_...   # Pro, recurring yearly ($79.99, 7500 cr)
+STRIPE_PRICE_PACK_100=price_...     # one-time price: 100-credit pack ($4.99)
+STRIPE_PRICE_PACK_300=price_...     # one-time price: 300-credit pack ($9.99)
 APP_URL=http://localhost:8787       # used for Stripe success/cancel redirects
 
 # Hardening (optional)

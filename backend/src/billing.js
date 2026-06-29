@@ -5,7 +5,11 @@ import { addCredits, setTier } from "./credits.js";
 // Plan catalog: maps a plan key → Stripe price id (from env) + what it grants.
 function plans(env) {
   return {
-    pro: { price: env.STRIPE_PRICE_PRO, mode: "subscription", credits: 500, tier: "pro" },
+    // Pro subscription, 3 billing periods. credits are granted per billing cycle
+    // (on checkout + each renewal), with bonus credits baked into the longer terms.
+    pro_monthly: { price: env.STRIPE_PRICE_PRO_MONTHLY, mode: "subscription", credits: 500, tier: "pro" },
+    pro_6mo: { price: env.STRIPE_PRICE_PRO_6MO, mode: "subscription", credits: 3500, tier: "pro" }, // 6×500 + 500 bonus
+    pro_annual: { price: env.STRIPE_PRICE_PRO_ANNUAL, mode: "subscription", credits: 7500, tier: "pro" }, // 12×500 + 1500 bonus
     pack_100: { price: env.STRIPE_PRICE_PACK_100, mode: "payment", credits: 100 },
     pack_300: { price: env.STRIPE_PRICE_PACK_300, mode: "payment", credits: 300 },
   };
