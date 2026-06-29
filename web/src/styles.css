@@ -235,6 +235,11 @@ body {
 .tier-feats li:first-child { border-top: none; }
 .tier-feats li::before { content: "✓"; position: absolute; left: 0; color: var(--violet); font-weight: 800; }
 
+.credits-note { background: var(--card); border: 1px solid var(--line); border-radius: 14px; padding: 18px 22px; margin: 28px 0 8px; text-align: center; }
+.credits-note h3 { margin: 0 0 6px; font-size: 16px; }
+.credits-note p { margin: 0; color: var(--muted); font-size: 14px; line-height: 1.6; }
+.fine { color: var(--muted); font-size: 13px; margin-top: 16px; }
+
 /* ---------- App view ---------- */
 .subnav { display: inline-flex; gap: 4px; background: #eceeff; border-radius: 12px; padding: 4px; margin-bottom: 18px; }
 .subtab { border: none; background: none; cursor: pointer; padding: 8px 18px; border-radius: 9px; font: inherit; font-weight: 600; color: var(--muted); }

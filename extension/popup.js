@@ -177,7 +177,9 @@ async function generate(payload) {
 
     if (res.status === 402) {
       setCredits(data.creditsRemaining ?? 0);
-      setStatus("Out of credits — they refresh next month, or upgrade above.");
+      setStatus(
+        `Not enough credits — needs ${data.creditsNeeded ?? "more"}, you have ${data.creditsRemaining ?? 0}.`,
+      );
       return;
     }
     if (res.status === 429) {
@@ -190,7 +192,9 @@ async function generate(payload) {
     lastResult = data;
     render(data, outEl);
     saveBtn.classList.remove("hidden");
-    setStatus("");
+    setStatus(
+      data.creditsUsed ? `Used ${data.creditsUsed} credit${data.creditsUsed > 1 ? "s" : ""}.` : "",
+    );
   } catch (e) {
     setStatus("Error: " + e.message);
   }

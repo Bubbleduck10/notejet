@@ -2,12 +2,26 @@
 import { FREE_CREDITS } from "./util.js";
 
 export const MODEL = "claude-haiku-4-5";
-export const MODEL_COST = {
+
+// Quality multiplier per model — a future "Pro quality" Opus/Sonnet generation
+// costs ~3x because the API is ~3-5x pricier.
+const MODEL_MULT = {
   "claude-haiku-4-5": 1,
   "claude-sonnet-4-6": 3,
   "claude-opus-4-8": 3,
 };
-export const COST = MODEL_COST[MODEL] ?? 1;
+
+// Variable credit cost based on input length (the real cost driver).
+// Thresholds in characters (~4 chars/token). Keep in sync with the frontend
+// estimate in web/src/credits.js and extension/popup.js.
+export function creditCost({ text = "", image = null } = {}, model = MODEL) {
+  const chars = (text || "").length;
+  let base;
+  if (chars <= 8000) base = 1;        // screenshot, short note, short video
+  else if (chars <= 25000) base = 2;  // medium video / long article
+  else base = 3;                       // long video / large document (≤ ~50k cap)
+  return base * (MODEL_MULT[model] ?? 1);
+}
 
 function curPeriod() {
   return new Date().toISOString().slice(0, 7); // "YYYY-MM"

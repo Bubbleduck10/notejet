@@ -75,8 +75,18 @@ export default function Pricing({ account, onSignIn }) {
         ))}
       </div>
 
+      <div className="credits-note reveal">
+        <h3>How credits work</h3>
+        <p>
+          Each generation uses credits based on length — a screenshot or short note is
+          <strong> 1 credit</strong>, a medium video or long article is <strong>2</strong>,
+          and a long video or large document is <strong>3</strong>. You only spend on
+          generations; saving and studying decks is always free.
+        </p>
+      </div>
+
       <p className="fine center">
-        Prices are early estimates and may change. Subscriptions are billed securely via Stripe.
+        Prices are early estimates and may change. Billed securely via Stripe.
       </p>
     </div>
   );

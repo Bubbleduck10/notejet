@@ -4,7 +4,7 @@ import { logError, logInfo, notify } from "./log.js";
 import * as auth from "./auth.js";
 import * as billing from "./billing.js";
 import * as decks from "./decks.js";
-import { MODEL, COST, getOrCreateAccount, charge } from "./credits.js";
+import { MODEL, creditCost, getOrCreateAccount, charge } from "./credits.js";
 import { enforceLimit } from "./rate.js";
 
 const MAX_TEXT_CHARS = 50000; // ~12k tokens
@@ -137,9 +137,13 @@ async function generate(request, env, ctx) {
     return json({ error: "Image too large (max ~5 MB)." }, 413);
   }
 
+  const cost = creditCost({ text, image });
   const account = await getOrCreateAccount(env, who.principal);
-  if (account.credits < COST) {
-    return json({ error: "Out of credits", creditsRemaining: account.credits }, 402);
+  if (account.credits < cost) {
+    return json(
+      { error: "Not enough credits", creditsRemaining: account.credits, creditsNeeded: cost },
+      402,
+    );
   }
 
   const content = [];
@@ -175,7 +179,8 @@ async function generate(request, env, ctx) {
     return json({ error: e.message || "Generation failed" }, 500);
   }
 
-  result.creditsRemaining = await charge(env, who.principal, COST, MODEL);
-  logInfo("generate_ok", { signedIn: !!who.userId, model: MODEL, cost: COST });
+  result.creditsRemaining = await charge(env, who.principal, cost, MODEL);
+  result.creditsUsed = cost;
+  logInfo("generate_ok", { signedIn: !!who.userId, model: MODEL, cost });
   return json(result, 200);
 }

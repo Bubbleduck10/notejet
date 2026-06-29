@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { api } from "./api.js";
 import Result from "./Result.jsx";
+import { estimateCost } from "./credits.js";
 
 export default function Create({ onCredits }) {
   const [text, setText] = useState("");
@@ -14,7 +15,9 @@ export default function Create({ onCredits }) {
     const { ok, status: s, data } = await api.generate(payload);
     if (s === 402) {
       onCredits(data.creditsRemaining ?? 0);
-      setStatus("Out of credits — upgrade above, or wait for the monthly reset.");
+      setStatus(
+        `Not enough credits — this needs ${data.creditsNeeded ?? "more"}, you have ${data.creditsRemaining ?? 0}. Upgrade above or wait for the monthly reset.`,
+      );
       return;
     }
     if (s === 429) {
@@ -27,7 +30,9 @@ export default function Create({ onCredits }) {
     }
     onCredits(data.creditsRemaining);
     setResult(data);
-    setStatus("");
+    setStatus(
+      data.creditsUsed ? `Done — used ${data.creditsUsed} credit${data.creditsUsed > 1 ? "s" : ""}.` : "",
+    );
   }
 
   async function onFiles(files) {
@@ -95,6 +100,12 @@ export default function Create({ onCredits }) {
       >
         Generate notes &amp; quiz
       </button>
+
+      {text.trim() && (
+        <p className="muted-sm" style={{ marginTop: 8 }}>
+          ≈ {estimateCost(text)} credit{estimateCost(text) > 1 ? "s" : ""} for this generation
+        </p>
+      )}
 
       <div className="status">{status}</div>
       {result && (
