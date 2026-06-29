@@ -4,7 +4,7 @@ import { logError, logInfo, notify } from "./log.js";
 import * as auth from "./auth.js";
 import * as billing from "./billing.js";
 import * as decks from "./decks.js";
-import { MODEL, creditCost, getOrCreateAccount, charge } from "./credits.js";
+import { MODEL, creditCost, getOrCreateAccount, charge, listHistory } from "./credits.js";
 import { enforceLimit } from "./rate.js";
 
 const MAX_TEXT_CHARS = 50000; // ~12k tokens
@@ -96,6 +96,16 @@ async function route(request, env, ctx) {
         creditsRemaining: acct.credits,
       });
     }
+    case "/history/list": {
+      const who = await auth.resolvePrincipal(request, env);
+      if (!who) return json({ error: "No identity" }, 400);
+      return json({ history: await listHistory(env, who.principal) });
+    }
+    case "/billing/history": {
+      const who = await auth.resolvePrincipal(request, env);
+      if (!who?.userId) return json({ error: "Sign in" }, 401);
+      return billing.history(env, who);
+    }
     case "/decks/save": {
       const who = await auth.resolvePrincipal(request, env);
       if (!who) return json({ error: "No identity" }, 400);
@@ -183,7 +193,7 @@ async function generate(request, env, ctx) {
     return json({ error: e.message || "Generation failed" }, 500);
   }
 
-  result.creditsRemaining = await charge(env, who.principal, cost, MODEL);
+  result.creditsRemaining = await charge(env, who.principal, cost, MODEL, result.title || null);
   result.creditsUsed = cost;
   logInfo("generate_ok", { signedIn: !!who.userId, model: MODEL, cost });
   return json(result, 200);

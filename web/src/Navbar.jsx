@@ -25,10 +25,14 @@ export default function Navbar({ view, go, account, onSignIn, onSignOut }) {
           )}
           {account.signedIn ? (
             <>
-              <span className="acct-email">
-                {account.email}
-                {account.tier === "pro" ? " · Pro" : ""}
-              </span>
+              <button
+                className={"avatar" + (account.tier === "pro" ? " pro" : "")}
+                onClick={() => go("profile")}
+                title={`${account.email}${account.tier === "pro" ? " · Pro" : ""} — view profile`}
+                aria-label="Profile"
+              >
+                {(account.email || "?").slice(0, 2).toUpperCase()}
+              </button>
               <button className="btn ghost sm" onClick={onSignOut}>
                 Sign out
               </button>

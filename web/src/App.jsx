@@ -8,6 +8,7 @@ import AppView from "./AppView.jsx";
 import AuthModal from "./AuthModal.jsx";
 import Terms from "./Terms.jsx";
 import Privacy from "./Privacy.jsx";
+import Profile from "./Profile.jsx";
 
 export default function App() {
   const [account, setAccount] = useState({
@@ -72,6 +73,7 @@ export default function App() {
         {view === "app" && <AppView onCredits={onCredits} />}
         {view === "terms" && <Terms />}
         {view === "privacy" && <Privacy />}
+        {view === "profile" && <Profile account={account} go={go} />}
       </main>
 
       <footer className="footer">

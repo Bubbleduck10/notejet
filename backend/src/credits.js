@@ -64,7 +64,7 @@ export async function getBalance(env, id) {
 }
 
 // Atomic decrement (guards against going negative) + spend log. Returns new balance.
-export async function charge(env, id, cost, model) {
+export async function charge(env, id, cost, model, title = null) {
   const res = await env.DB.prepare(
     "UPDATE accounts SET credits = credits - ? WHERE id = ? AND credits >= ?",
   )
@@ -73,12 +73,22 @@ export async function charge(env, id, cost, model) {
 
   if (res.meta?.changes === 1) {
     await env.DB.prepare(
-      "INSERT INTO spend_log (account_id, cost, model, created_at) VALUES (?, ?, ?, ?)",
+      "INSERT INTO spend_log (account_id, cost, model, title, created_at) VALUES (?, ?, ?, ?, ?)",
     )
-      .bind(id, cost, model, new Date().toISOString())
+      .bind(id, cost, model, title, new Date().toISOString())
       .run();
   }
   return getBalance(env, id);
+}
+
+// User-facing request history (most recent first) from the spend log.
+export async function listHistory(env, id, limit = 50) {
+  const { results } = await env.DB.prepare(
+    "SELECT title, cost, created_at FROM spend_log WHERE account_id = ? ORDER BY id DESC LIMIT ?",
+  )
+    .bind(id, limit)
+    .all();
+  return results || [];
 }
 
 export async function addCredits(env, id, amount) {

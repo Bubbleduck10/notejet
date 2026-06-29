@@ -75,6 +75,30 @@ export async function checkout(env, auth, planKey) {
   }
 }
 
+// Payment history straight from Stripe for the signed-in user's customer record.
+export async function history(env, who) {
+  const acct = await env.DB.prepare("SELECT stripe_customer_id FROM accounts WHERE id = ?")
+    .bind(who.principal)
+    .first();
+  const customer = acct?.stripe_customer_id;
+  if (!customer) return json({ payments: [] });
+
+  try {
+    const data = await stripe(env, "GET", `charges?customer=${customer}&limit=20`);
+    const payments = (data.data || []).map((c) => ({
+      amount: c.amount,
+      currency: c.currency,
+      date: c.created,
+      status: c.refunded ? "refunded" : c.status,
+      description: c.description || (c.invoice ? "Pro subscription" : "Credit pack"),
+      receiptUrl: c.receipt_url || null,
+    }));
+    return json({ payments });
+  } catch (e) {
+    return json({ payments: [], error: e.message || "Could not load payments" });
+  }
+}
+
 export async function webhook(env, request) {
   const sig = request.headers.get("Stripe-Signature") || "";
   const payload = await request.text();
