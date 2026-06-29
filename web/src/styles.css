@@ -332,6 +332,16 @@ textarea:focus, .field:focus { outline: 2px solid #c7cbff; border-color: var(--i
 /* ---------- Footer ---------- */
 .footer { border-top: 1px solid var(--line); background: #fff; padding: 22px 0; }
 .footer-inner { display: flex; justify-content: space-between; align-items: center; font-weight: 600; }
+.footer-links { display: flex; gap: 16px; font-weight: 500; }
+
+.legal { padding-bottom: 40px; }
+.legal h1 { font-size: 30px; margin: 0 0 4px; }
+.legal .updated { color: var(--muted); font-size: 14px; margin: 0 0 22px; }
+.legal h2 { font-size: 18px; margin: 24px 0 8px; }
+.legal p, .legal li { color: var(--fg); font-size: 15px; line-height: 1.65; }
+.legal ul { padding-left: 20px; margin: 6px 0; }
+.legal li { margin-bottom: 4px; }
+.legal a { color: var(--indigo); }
 
 /* ---------- Pulse ---------- */
 .pulse { animation: pulse 2.4s ease-in-out infinite; }

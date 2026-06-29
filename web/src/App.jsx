@@ -6,6 +6,8 @@ import HowItWorks from "./HowItWorks.jsx";
 import Pricing from "./Pricing.jsx";
 import AppView from "./AppView.jsx";
 import AuthModal from "./AuthModal.jsx";
+import Terms from "./Terms.jsx";
+import Privacy from "./Privacy.jsx";
 
 export default function App() {
   const [account, setAccount] = useState({
@@ -68,12 +70,17 @@ export default function App() {
           <Pricing account={account} onSignIn={() => setAuthOpen(true)} />
         )}
         {view === "app" && <AppView onCredits={onCredits} />}
+        {view === "terms" && <Terms />}
+        {view === "privacy" && <Privacy />}
       </main>
 
       <footer className="footer">
         <div className="container footer-inner">
           <span>🧠 NoteJet</span>
-          <span className="muted-sm">Made for studying smarter.</span>
+          <span className="footer-links">
+            <button className="link" onClick={() => go("terms")}>Terms</button>
+            <button className="link" onClick={() => go("privacy")}>Privacy</button>
+          </span>
         </div>
       </footer>
 
