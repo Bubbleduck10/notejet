@@ -1,4 +1,4 @@
-# StudyMate — Build Checklist & Roadmap
+# NoteJet — Build Checklist & Roadmap
 
 Living doc. Check items off as we go. Ordered roughly by dependency — earlier
 sections unblock later ones. ⭐ = recommended next.
@@ -88,14 +88,14 @@ Legend: `[ ]` todo · `[~]` in progress · `[x]` done
 - [x] Flow: upload / drag / paste a screenshot, or paste text → notes + quiz
 - [x] Account (email code) + credits badge + Upgrade (in-page Stripe redirect) + decks + flashcards
 - [x] Stripe success/cancel redirect handled via `?checkout=` banner
-- [x] Deployed to GitHub Pages → https://bubbleduck10.github.io/studymate/ (built locally → `gh-pages` branch)
+- [x] Deployed to GitHub Pages → https://bubbleduck10.github.io/notejet/ (built locally → `gh-pages` branch)
 - [ ] Deploy the **backend Worker** + set web `VITE_BACKEND_URL` to it + Worker `ALLOWED_ORIGINS` to the Pages origin (until then the live UI loads but sign-in/generate/decks won't work)
 - [ ] Re-add the Actions auto-deploy workflow (removed — token lacked `workflow` scope); for now redeploy with `cd web && npm run build && npx gh-pages -d dist`
 - [ ] Server-side transcript fetch so a pasted video URL works on web (no DOM scrape here) — v2
 
 ## 8. iOS app (App Store)
 - [ ] Expo project reusing the shared core/logic
-- [ ] Share Sheet target (share a YouTube link / image into StudyMate)
+- [ ] Share Sheet target (share a YouTube link / image into NoteJet)
 - [ ] Screenshot → on-device OCR (Apple Vision) or send image to backend vision
 - [ ] Sign-in + restore web subscription entitlement
 - [ ] App Store assets (icon, screenshots, description) + review submission

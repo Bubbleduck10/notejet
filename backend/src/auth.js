@@ -50,15 +50,15 @@ async function sendCode(env, email, code) {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
-        from: env.EMAIL_FROM || "StudyMate <onboarding@resend.dev>",
+        from: env.EMAIL_FROM || "NoteJet <onboarding@resend.dev>",
         to: email,
-        subject: "Your StudyMate sign-in code",
+        subject: "Your NoteJet sign-in code",
         text: `Your code is ${code}. It expires in 10 minutes.`,
       }),
     });
   } else {
     // Dev: no email provider configured — read the code from the wrangler console.
-    console.log(`[dev] StudyMate login code for ${email}: ${code}`);
+    console.log(`[dev] NoteJet login code for ${email}: ${code}`);
   }
 }
 

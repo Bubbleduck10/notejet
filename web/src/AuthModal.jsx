@@ -32,7 +32,7 @@ export default function AuthModal({ onClose, onDone }) {
         <button className="modal-close" onClick={onClose} aria-label="Close">
           ×
         </button>
-        <h2 className="modal-title">Sign in to StudyMate</h2>
+        <h2 className="modal-title">Sign in to NoteJet</h2>
         <p className="modal-sub">No password — we'll email you a one-time code.</p>
 
         <input

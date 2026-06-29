@@ -1,6 +1,6 @@
 // 👇 Base URL of your backend (no trailing path).
 // Local dev:  http://localhost:8787
-// Deployed:   https://studymate-backend.<your-subdomain>.workers.dev
+// Deployed:   https://notejet-backend.<your-subdomain>.workers.dev
 const BACKEND_URL = "http://localhost:8787";
 
 const $ = (id) => document.getElementById(id);

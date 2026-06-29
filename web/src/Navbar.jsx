@@ -9,7 +9,7 @@ export default function Navbar({ view, go, account, onSignIn, onSignOut }) {
     <header className="nav">
       <div className="container nav-inner">
         <button className="brand" onClick={() => go("home")}>
-          <span className="brand-mark">🧠</span> StudyMate
+          <span className="brand-mark">🧠</span> NoteJet
         </button>
 
         <nav className="nav-links">

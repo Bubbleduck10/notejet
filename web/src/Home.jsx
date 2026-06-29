@@ -16,7 +16,7 @@ export default function Home({ go }) {
             <span className="grad-text">notes &amp; quizzes</span>.
           </h1>
           <p className="hero-sub reveal" style={{ animationDelay: "0.12s" }}>
-            Drop a screenshot or paste a transcript. StudyMate distills the key points and
+            Drop a screenshot or paste a transcript. NoteJet distills the key points and
             builds a quick quiz so you actually remember it.
           </p>
           <div className="hero-cta reveal" style={{ animationDelay: "0.19s" }}>

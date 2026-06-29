@@ -23,7 +23,7 @@ export function notify(env, ctx, message) {
   const p = fetch(env.ALERT_WEBHOOK_URL, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ text: `StudyMate: ${message}` }),
+    body: JSON.stringify({ text: `NoteJet: ${message}` }),
   }).catch(() => {});
   if (ctx?.waitUntil) ctx.waitUntil(p);
 }

@@ -1,4 +1,4 @@
-# StudyMate (v1)
+# NoteJet (v1)
 
 An AI study helper. Feed it a **screenshot** or a **transcript/notes**, and it returns
 concise study notes plus a quick quiz. v1 ships as a Chrome/Edge extension backed by a
@@ -60,7 +60,7 @@ npm run deploy
 npx wrangler d1 execute studymate --remote --file=./schema.sql   # apply schema to prod DB
 ```
 
-Wrangler prints a URL like `https://studymate-backend.<you>.workers.dev`.
+Wrangler prints a URL like `https://notejet-backend.<you>.workers.dev`.
 Add the Stripe + email secrets the same way (`wrangler secret put STRIPE_SECRET_KEY`, etc.) when you wire up billing — see below.
 
 ---
@@ -108,7 +108,7 @@ Credits/tier are granted by the **webhook**, never the client — so they can't 
 1. Put your backend URL in `extension/popup.js` → `BACKEND_URL` (default is localhost).
 2. Open `chrome://extensions`, turn on **Developer mode**.
 3. Click **Load unpacked** and select the `extension/` folder.
-4. Pin StudyMate and click it on any page.
+4. Pin NoteJet and click it on any page.
 
 **Try it:**
 - **Screenshot tab** — captures the visible page and reads it (works anywhere).

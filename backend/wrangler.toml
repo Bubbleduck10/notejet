@@ -1,4 +1,4 @@
-name = "studymate-backend"
+name = "notejet-backend"
 main = "src/index.js"
 compatibility_date = "2026-01-01"
 compatibility_flags = ["nodejs_compat"]
@@ -10,11 +10,11 @@ compatibility_flags = ["nodejs_compat"]
 # STRIPE_*, RESEND_*) go via `wrangler secret put`, never here.
 [vars]
 ALLOWED_ORIGINS = "https://bubbleduck10.github.io,http://localhost:5173"
-APP_URL = "https://bubbleduck10.github.io/studymate"
+APP_URL = "https://bubbleduck10.github.io/notejet"
 
 # Credits datastore. Create it once with:  wrangler d1 create studymate
 # then paste the printed database_id below.
 [[d1_databases]]
 binding = "DB"
 database_name = "studymate"
-database_id = "REPLACE_WITH_ID_FROM_wrangler_d1_create"
+database_id = "aeec091a-fa08-486c-8a60-6a001f7f2af8"

@@ -1,4 +1,4 @@
--- StudyMate datastore (Cloudflare D1 / SQLite) — full schema for a fresh database.
+-- NoteJet datastore (Cloudflare D1 / SQLite) — full schema for a fresh database.
 -- Apply with:  wrangler d1 execute studymate --file=./schema.sql           (local)
 --              wrangler d1 execute studymate --remote --file=./schema.sql  (deployed)
 -- Already created the DB before accounts/Stripe? Run migrate-v2.sql instead.

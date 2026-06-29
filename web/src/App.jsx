@@ -72,7 +72,7 @@ export default function App() {
 
       <footer className="footer">
         <div className="container footer-inner">
-          <span>🧠 StudyMate</span>
+          <span>🧠 NoteJet</span>
           <span className="muted-sm">Made for studying smarter.</span>
         </div>
       </footer>

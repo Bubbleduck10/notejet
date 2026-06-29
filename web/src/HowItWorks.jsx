@@ -1,6 +1,6 @@
 const STEPS = [
   { n: "1", icon: "📥", title: "Capture", body: "Upload or paste a screenshot of whatever you're studying, or drop in a transcript / your notes." },
-  { n: "2", icon: "⚡", title: "Generate", body: "StudyMate reads it and produces a tight set of notes plus a short quiz — in seconds." },
+  { n: "2", icon: "⚡", title: "Generate", body: "NoteJet reads it and produces a tight set of notes plus a short quiz — in seconds." },
   { n: "3", icon: "🎴", title: "Review", body: "Save it as a deck and run through it in flashcard mode to lock the material in." },
 ];
 
