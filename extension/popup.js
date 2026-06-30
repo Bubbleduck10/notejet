@@ -1,7 +1,7 @@
 // 👇 Base URL of your backend (no trailing path).
 // Local dev:  http://localhost:8787
-// Deployed:   https://notejet-backend.<your-subdomain>.workers.dev
-const BACKEND_URL = "https://notejet-backend.notejet.workers.dev";
+// Production: https://api.notejet.app
+const BACKEND_URL = "https://api.notejet.app";
 
 const $ = (id) => document.getElementById(id);
 const statusEl = $("status");

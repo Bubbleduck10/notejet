@@ -1,13 +1,24 @@
 {
   "manifest_version": 3,
   "name": "NoteJet — Notes & Quizzes",
-  "version": "0.1.0",
-  "description": "Turn a screenshot or video transcript into study notes and a quick quiz.",
-  "permissions": ["activeTab", "tabs"],
-  "host_permissions": ["<all_urls>"],
+  "version": "1.0.0",
+  "description": "Turn a screenshot or YouTube transcript into concise study notes and a quick quiz.",
+  "permissions": ["activeTab", "storage"],
+  "host_permissions": ["https://api.notejet.app/*"],
+  "icons": {
+    "16": "icons/icon16.png",
+    "32": "icons/icon32.png",
+    "48": "icons/icon48.png",
+    "128": "icons/icon128.png"
+  },
   "action": {
     "default_popup": "popup.html",
-    "default_title": "NoteJet"
+    "default_title": "NoteJet",
+    "default_icon": {
+      "16": "icons/icon16.png",
+      "32": "icons/icon32.png",
+      "48": "icons/icon48.png"
+    }
   },
   "content_scripts": [
     {
