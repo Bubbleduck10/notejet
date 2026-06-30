@@ -1,0 +1,36 @@
+{
+  "expo": {
+    "name": "NoteJet",
+    "slug": "notejet",
+    "scheme": "notejet",
+    "version": "1.0.0",
+    "orientation": "portrait",
+    "icon": "./assets/icon.png",
+    "userInterfaceStyle": "light",
+    "newArchEnabled": true,
+    "ios": {
+      "supportsTablet": true,
+      "bundleIdentifier": "app.notejet"
+    },
+    "android": {
+      "package": "app.notejet",
+      "adaptiveIcon": {
+        "backgroundColor": "#6366f1",
+        "foregroundImage": "./assets/android-icon-foreground.png",
+        "backgroundImage": "./assets/android-icon-background.png",
+        "monochromeImage": "./assets/android-icon-monochrome.png"
+      }
+    },
+    "web": {
+      "favicon": "./assets/favicon.png"
+    },
+    "plugins": [
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "NoteJet uses your photos so you can turn a screenshot into study notes."
+        }
+      ]
+    ]
+  }
+}
