@@ -24,6 +24,10 @@
     {
       "matches": ["*://*.youtube.com/*"],
       "js": ["content.js"]
+    },
+    {
+      "matches": ["https://notejet.app/*", "https://www.notejet.app/*"],
+      "js": ["sync.js"]
     }
   ]
 }

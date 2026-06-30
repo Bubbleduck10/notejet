@@ -84,75 +84,27 @@ function renderAccount(data) {
     return;
   }
 
+  // Sign-in happens on the website (full page, supports Google + email codes),
+  // then a content script on notejet.app mirrors the session token back here.
   const wrap = document.createElement("div");
   wrap.className = "signin";
-  const email = document.createElement("input");
-  email.type = "email";
-  email.placeholder = "you@email.com";
-  const send = document.createElement("button");
-  send.className = "link";
-  send.textContent = "Sign in";
-  const code = document.createElement("input");
-  code.type = "text";
-  code.placeholder = "6-digit code";
-  code.maxLength = 6;
-  code.classList.add("hidden");
-  const verify = document.createElement("button");
-  verify.className = "link hidden";
-  verify.textContent = "Verify";
-
-  send.onclick = async () => {
-    if (!email.value.trim()) return setStatus("Enter your email.");
-    setStatus("Sending code…");
-    const res = await fetch(`${BACKEND_URL}/auth/request`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email: email.value.trim() }),
-    });
-    const data = await res.json();
-    if (res.ok) {
-      code.classList.remove("hidden");
-      verify.classList.remove("hidden");
-      setStatus("Check your email for the code.");
-    } else setStatus(data.error || "Could not send code.");
+  const btn = document.createElement("button");
+  btn.className = "link";
+  btn.textContent = "Sign in on NoteJet →";
+  btn.onclick = () => {
+    chrome.tabs.create({ url: "https://notejet.app/?signin=1" });
+    setStatus("Sign in on the site that opened, then reopen this popup.");
   };
-
-  verify.onclick = async () => {
-    setStatus("Verifying…");
-    const res = await fetch(`${BACKEND_URL}/auth/verify`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({
-        email: email.value.trim(),
-        code: code.value.trim(),
-        clientId: await getClientId(),
-      }),
-    });
-    const data = await res.json();
-    if (res.ok) {
-      await chrome.storage.local.set({ token: data.token, email: data.email });
-      setCredits(data.creditsRemaining);
-      setStatus("Signed in.");
-      refreshMe();
-    } else setStatus(data.error || "Verification failed.");
-  };
-
-  wrap.append(email, send, code, verify);
+  const hint = document.createElement("div");
+  hint.style.cssText = "font-size:12px;color:#6b7280;margin-top:6px;";
+  hint.textContent = "Signing in on the website syncs here automatically.";
+  wrap.append(btn, hint);
   accountEl.appendChild(wrap);
 }
 
 async function upgrade() {
-  setStatus("Opening checkout…");
-  const res = await fetch(`${BACKEND_URL}/billing/checkout`, {
-    method: "POST",
-    headers: await jsonHeaders(),
-    body: JSON.stringify({ plan: "pro" }),
-  });
-  const data = await res.json();
-  if (res.ok && data.url) {
-    chrome.tabs.create({ url: data.url });
-    setStatus("");
-  } else setStatus(data.error || "Checkout failed.");
+  // Plans/checkout live on the website (pricing toggle + Stripe). Open it there.
+  chrome.tabs.create({ url: "https://notejet.app/?go=pricing" });
 }
 
 async function signOut() {

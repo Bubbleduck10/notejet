@@ -28,13 +28,15 @@ export default function App() {
   const onCredits = (n) => setAccount((a) => ({ ...a, creditsRemaining: n }));
 
   useEffect(() => {
-    const c = new URLSearchParams(location.search).get("checkout");
+    const params = new URLSearchParams(location.search);
+    const c = params.get("checkout");
     if (c === "success") setBanner("🎉 Payment received — your credits have been added.");
     else if (c === "cancel") setBanner("Checkout canceled — no charge made.");
-    if (c) {
-      setView("app");
-      history.replaceState({}, "", location.pathname);
-    }
+    if (c) setView("app");
+    const go = params.get("go"); // e.g. extension deep-links ?go=pricing
+    if (go) setView(go);
+    if (params.get("signin")) setAuthOpen(true); // extension "Sign in on NoteJet"
+    if (c || go || params.get("signin")) history.replaceState({}, "", location.pathname);
     refresh();
   }, []);
 
