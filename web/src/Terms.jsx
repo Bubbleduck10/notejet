@@ -98,8 +98,8 @@ export default function Terms() {
 
       <h2>13. Governing law</h2>
       <p>
-        These Terms are governed by the laws of the State of [STATE], United States, without regard to
-        its conflict-of-laws rules.
+        These Terms are governed by the laws of the State of California, United States, without regard
+        to its conflict-of-laws rules.
       </p>
 
       <h2>14. Contact</h2>
