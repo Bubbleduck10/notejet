@@ -168,7 +168,7 @@ async function generate(request, env, ctx) {
   let inputText = text;
   if (!inputText && !image && url) {
     if (!isValidHttpUrl(url)) return json({ error: "Enter a valid http(s) link." }, 400);
-    const src = await fetchSourceText(url);
+    const src = await fetchSourceText(env, url);
     if (src.error) return json({ error: src.error }, 422);
     inputText = src.text.slice(0, MAX_TEXT_CHARS); // cap long transcripts
   }

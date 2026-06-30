@@ -31,41 +31,34 @@ function youtubeId(url) {
   return null;
 }
 
-async function youtubeTranscript(id) {
-  // Datacenter IPs (like the Worker's) hit YouTube's consent wall, which serves a
-  // page without caption data. The consent cookie + has_verified bypasses it.
-  const res = await fetch(
-    `https://www.youtube.com/watch?v=${id}&hl=en&bpctr=9999999999&has_verified=1`,
-    {
-      headers: {
-        "User-Agent": UA,
-        "Accept-Language": "en-US,en;q=0.9",
-        Cookie: "CONSENT=YES+1; SOCS=CAISEwgDEgk0ODE3Nzk3MjQaAmVuIAEaBgiA_LyaBg",
-      },
-    },
-  );
-  const html = await res.text();
-  const m = html.match(/"captionTracks":(\[.*?\])/);
-  if (!m) return null;
-  let tracks;
+// YouTube transcript via Supadata (https://supadata.ai). Direct scraping is
+// blocked from the Worker's datacenter IPs (YouTube returns 429 + captcha), so
+// we use a transcript provider. Requires SUPADATA_API_KEY to be set.
+async function youtubeTranscript(env, id) {
+  if (!env.SUPADATA_API_KEY) return null;
   try {
-    tracks = JSON.parse(m[1].replace(/\\u0026/g, "&"));
+    const r = await fetch(
+      `https://api.supadata.ai/v1/youtube/transcript?url=${encodeURIComponent(
+        "https://www.youtube.com/watch?v=" + id,
+      )}&text=true`,
+      { headers: { "x-api-key": env.SUPADATA_API_KEY } },
+    );
+    if (!r.ok) return null;
+    const j = await r.json();
+    if (typeof j.content === "string") return j.content.trim() || null;
+    if (Array.isArray(j.content)) {
+      return (
+        j.content
+          .map((s) => s.text || "")
+          .join(" ")
+          .replace(/\s+/g, " ")
+          .trim() || null
+      );
+    }
+    return null;
   } catch {
     return null;
   }
-  const track =
-    tracks.find((t) => t.languageCode === "en" && t.kind !== "asr") ||
-    tracks.find((t) => t.languageCode === "en") ||
-    tracks[0];
-  if (!track?.baseUrl) return null;
-
-  const x = await fetch(track.baseUrl, { headers: { "User-Agent": UA } });
-  const xml = await x.text();
-  const lines = [...xml.matchAll(/<text[^>]*>([\s\S]*?)<\/text>/g)].map((mm) =>
-    decodeEntities(mm[1].replace(/<[^>]+>/g, " ")),
-  );
-  const text = lines.join(" ").replace(/\s+/g, " ").trim();
-  return text || null;
 }
 
 async function pageText(url) {
@@ -108,10 +101,10 @@ export function isValidHttpUrl(raw) {
   }
 }
 
-export async function fetchSourceText(url) {
+export async function fetchSourceText(env, url) {
   const id = youtubeId(url);
   if (id) {
-    const t = await youtubeTranscript(id);
+    const t = await youtubeTranscript(env, id);
     if (t) return { text: t, kind: "youtube" };
     return {
       error:
