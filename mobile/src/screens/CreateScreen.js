@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -15,9 +15,11 @@ import * as ImagePicker from "expo-image-picker";
 import { api } from "../api";
 import { colors } from "../theme";
 import GradientButton from "../components/GradientButton";
+import { useShare } from "../shareContext";
 
 export default function CreateScreen() {
   const insets = useSafeAreaInsets();
+  const share = useShare();
   const [url, setUrl] = useState("");
   const [text, setText] = useState("");
   const [image, setImage] = useState(null);
@@ -39,13 +41,7 @@ export default function CreateScreen() {
     }
   }
 
-  async function run() {
-    let payload;
-    if (text.trim()) payload = { text: text.trim() };
-    else if (url.trim()) payload = { url: url.trim() };
-    else if (image) payload = { image: { data: image.data, mediaType: image.mediaType } };
-    else return setStatus("Add a link, some text, or a screenshot.");
-
+  async function runWith(payload) {
     setLoading(true);
     setResult(null);
     setRevealed({});
@@ -60,6 +56,31 @@ export default function CreateScreen() {
       data.creditsUsed ? `Done — used ${data.creditsUsed} credit${data.creditsUsed > 1 ? "s" : ""}.` : "",
     );
   }
+
+  function run() {
+    if (text.trim()) return runWith({ text: text.trim() });
+    if (url.trim()) return runWith({ url: url.trim() });
+    if (image) return runWith({ image: { data: image.data, mediaType: image.mediaType } });
+    setStatus("Add a link, some text, or a screenshot.");
+  }
+
+  // Auto-run when content is shared into the app (Share → NoteJet).
+  useEffect(() => {
+    const p = share.pending;
+    if (!p) return;
+    if (p.url) {
+      setUrl(p.url);
+      setText("");
+      setImage(null);
+    } else if (p.text) {
+      setText(p.text);
+      setUrl("");
+      setImage(null);
+    }
+    share.clear();
+    runWith(p.url ? { url: p.url } : { text: p.text });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [share.pending?.id]);
 
   async function save() {
     if (!result) return;
