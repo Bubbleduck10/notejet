@@ -44,6 +44,8 @@ export const api = {
   requestCode: (email) => post("/auth/request", { email }, false),
   verifyCode: async (email, code) =>
     post("/auth/verify", { email, code, clientId: await clientId() }, false),
+  googleAuth: async (idToken) =>
+    post("/auth/google", { idToken, clientId: await clientId() }, false),
   setUsername: (username) => post("/auth/username", { username }),
   generate: (payload) => post("/generate", payload),
   history: () => post("/history/list", {}),
