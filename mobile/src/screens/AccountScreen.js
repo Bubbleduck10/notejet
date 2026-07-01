@@ -1,18 +1,14 @@
 import { useState, useCallback } from "react";
 import { useFocusEffect } from "@react-navigation/native";
-import {
-  View,
-  Text,
-  TextInput,
-  ScrollView,
-  TouchableOpacity,
-  StyleSheet,
-  ActivityIndicator,
-} from "react-native";
+import { View, Text, TextInput, ScrollView, TouchableOpacity, StyleSheet, ActivityIndicator } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { LinearGradient } from "expo-linear-gradient";
 import { api } from "../api";
-import { colors } from "../theme";
+import { colors, GRADIENT } from "../theme";
+import GradientButton from "../components/GradientButton";
 
 export default function AccountScreen() {
+  const insets = useSafeAreaInsets();
   const [step, setStep] = useState("loading"); // loading | out | sent | username | in
   const [account, setAccount] = useState(null);
   const [email, setEmail] = useState("");
@@ -31,11 +27,7 @@ export default function AccountScreen() {
     }
   }, []);
 
-  useFocusEffect(
-    useCallback(() => {
-      refresh();
-    }, [refresh]),
-  );
+  useFocusEffect(useCallback(() => { refresh(); }, [refresh]));
 
   async function sendCode() {
     if (!email.trim()) return setStatus("Enter your email.");
@@ -82,32 +74,37 @@ export default function AccountScreen() {
   }
 
   return (
-    <ScrollView style={{ flex: 1, backgroundColor: colors.bg }} contentContainerStyle={styles.scroll}>
-      {step === "loading" && <ActivityIndicator color={colors.indigo} style={{ marginTop: 40 }} />}
+    <ScrollView
+      style={{ flex: 1, backgroundColor: colors.bg }}
+      contentContainerStyle={[styles.scroll, { paddingTop: insets.top + 14, paddingBottom: 130 }]}
+      keyboardShouldPersistTaps="handled"
+      showsVerticalScrollIndicator={false}
+    >
+      <Text style={styles.brand}>NOTEJET</Text>
+
+      {step === "loading" && <ActivityIndicator color={colors.violet} style={{ marginTop: 40 }} />}
 
       {step === "in" && account && (
         <View>
-          <View style={styles.avatar}>
+          <LinearGradient colors={GRADIENT} start={{ x: 0, y: 0 }} end={{ x: 1, y: 1 }} style={styles.avatar}>
             <Text style={styles.avatarText}>
               {(account.username || account.email || "?").slice(0, 2).toUpperCase()}
             </Text>
-          </View>
+          </LinearGradient>
           <Text style={styles.name}>{account.username || account.email}</Text>
           {account.username ? <Text style={styles.emailSub}>{account.email}</Text> : null}
           <View style={styles.statRow}>
             <View style={[styles.pill, account.tier === "pro" && styles.pillPro]}>
               <Text style={[styles.pillText, account.tier === "pro" && styles.pillProText]}>
-                {account.tier === "pro" ? "Pro" : "Free"}
+                {account.tier === "pro" ? "PRO" : "FREE"}
               </Text>
             </View>
             <Text style={styles.credits}>{account.creditsRemaining} credits</Text>
           </View>
           {account.tier !== "pro" && (
-            <Text style={styles.hint}>
-              Manage your plan and get more credits at notejet.app.
-            </Text>
+            <Text style={styles.hint}>Manage your plan and get more credits at notejet.app.</Text>
           )}
-          <TouchableOpacity style={styles.outBtn} onPress={signOut}>
+          <TouchableOpacity style={styles.outBtn} onPress={signOut} activeOpacity={0.8}>
             <Text style={styles.outText}>Sign out</Text>
           </TouchableOpacity>
         </View>
@@ -120,7 +117,7 @@ export default function AccountScreen() {
           <TextInput
             style={styles.input}
             placeholder="you@email.com"
-            placeholderTextColor={colors.muted}
+            placeholderTextColor={colors.faint}
             value={email}
             onChangeText={setEmail}
             autoCapitalize="none"
@@ -131,16 +128,17 @@ export default function AccountScreen() {
             <TextInput
               style={styles.input}
               placeholder="6-digit code"
-              placeholderTextColor={colors.muted}
+              placeholderTextColor={colors.faint}
               value={code}
               onChangeText={setCode}
               keyboardType="number-pad"
               maxLength={6}
             />
           )}
-          <TouchableOpacity style={styles.cta} onPress={step === "sent" ? verify : sendCode}>
-            <Text style={styles.ctaText}>{step === "sent" ? "Verify & sign in" : "Email me a code"}</Text>
-          </TouchableOpacity>
+          <GradientButton
+            title={step === "sent" ? "Verify & sign in" : "Email me a code"}
+            onPress={step === "sent" ? verify : sendCode}
+          />
           <Text style={styles.hint}>
             New here? You'll pick a username next. Buy Pro on notejet.app and it carries over.
           </Text>
@@ -154,7 +152,7 @@ export default function AccountScreen() {
           <TextInput
             style={styles.input}
             placeholder="username"
-            placeholderTextColor={colors.muted}
+            placeholderTextColor={colors.faint}
             value={username}
             onChangeText={setUsername}
             autoCapitalize="none"
@@ -162,9 +160,7 @@ export default function AccountScreen() {
             maxLength={20}
           />
           <Text style={styles.fine}>3–20 characters · letters, numbers, underscore</Text>
-          <TouchableOpacity style={styles.cta} onPress={saveUsername}>
-            <Text style={styles.ctaText}>Finish</Text>
-          </TouchableOpacity>
+          <GradientButton title="Finish" onPress={saveUsername} />
         </View>
       )}
 
@@ -174,42 +170,44 @@ export default function AccountScreen() {
 }
 
 const styles = StyleSheet.create({
-  scroll: { padding: 18, paddingBottom: 48 },
-  h1: { fontSize: 26, fontWeight: "800", color: colors.text },
-  sub: { fontSize: 15, color: colors.muted, marginTop: 4, marginBottom: 18 },
+  scroll: { paddingHorizontal: 18 },
+  brand: { color: colors.violet, fontWeight: "800", fontSize: 12, letterSpacing: 3, marginBottom: 16 },
+  h1: { fontSize: 30, fontWeight: "800", color: colors.text, letterSpacing: -0.5 },
+  sub: { fontSize: 15, color: colors.muted, marginTop: 6, marginBottom: 20 },
   input: {
     backgroundColor: colors.card,
     borderWidth: 1,
-    borderColor: colors.line,
-    borderRadius: 12,
-    padding: 14,
+    borderColor: colors.cardBorder,
+    borderRadius: 14,
+    padding: 15,
     fontSize: 15,
     color: colors.text,
-    marginBottom: 10,
-  },
-  cta: { backgroundColor: colors.indigo, borderRadius: 14, paddingVertical: 15, alignItems: "center", marginTop: 4 },
-  ctaText: { color: "#fff", fontWeight: "700", fontSize: 16 },
-  hint: { color: colors.muted, fontSize: 13, marginTop: 14, lineHeight: 19 },
-  fine: { color: colors.muted, fontSize: 12, marginBottom: 10 },
-  status: { color: colors.muted, fontSize: 14, marginTop: 14, textAlign: "center" },
-  avatar: {
-    width: 72,
-    height: 72,
-    borderRadius: 36,
-    backgroundColor: colors.indigo,
-    alignItems: "center",
-    justifyContent: "center",
     marginBottom: 12,
   },
-  avatarText: { color: "#fff", fontWeight: "800", fontSize: 26 },
-  name: { fontSize: 22, fontWeight: "800", color: colors.text },
-  emailSub: { color: colors.muted, fontSize: 14, marginTop: 2 },
-  statRow: { flexDirection: "row", alignItems: "center", marginTop: 12, gap: 10 },
-  pill: { backgroundColor: colors.line, borderRadius: 999, paddingHorizontal: 12, paddingVertical: 4 },
-  pillPro: { backgroundColor: colors.indigo },
-  pillText: { color: colors.muted, fontWeight: "700", fontSize: 13 },
+  hint: { color: colors.muted, fontSize: 13, marginTop: 16, lineHeight: 19 },
+  fine: { color: colors.faint, fontSize: 12, marginBottom: 12 },
+  status: { color: colors.muted, fontSize: 14, marginTop: 16, textAlign: "center" },
+  avatar: {
+    width: 78,
+    height: 78,
+    borderRadius: 24,
+    alignItems: "center",
+    justifyContent: "center",
+    marginBottom: 14,
+    shadowColor: colors.glow,
+    shadowOpacity: 0.5,
+    shadowRadius: 16,
+    shadowOffset: { width: 0, height: 6 },
+  },
+  avatarText: { color: "#fff", fontWeight: "800", fontSize: 28 },
+  name: { fontSize: 24, fontWeight: "800", color: colors.text },
+  emailSub: { color: colors.muted, fontSize: 14, marginTop: 3 },
+  statRow: { flexDirection: "row", alignItems: "center", marginTop: 14, gap: 10 },
+  pill: { backgroundColor: colors.bgElev, borderWidth: 1, borderColor: colors.cardBorder, borderRadius: 999, paddingHorizontal: 12, paddingVertical: 5 },
+  pillPro: { backgroundColor: colors.indigo, borderColor: colors.indigo },
+  pillText: { color: colors.muted, fontWeight: "800", fontSize: 12, letterSpacing: 1 },
   pillProText: { color: "#fff" },
-  credits: { color: colors.text, fontWeight: "600", fontSize: 15 },
-  outBtn: { marginTop: 24, borderWidth: 1, borderColor: colors.line, borderRadius: 12, paddingVertical: 13, alignItems: "center" },
-  outText: { color: colors.danger, fontWeight: "600" },
+  credits: { color: colors.text, fontWeight: "700", fontSize: 15 },
+  outBtn: { marginTop: 26, borderWidth: 1, borderColor: colors.cardBorder, borderRadius: 14, paddingVertical: 14, alignItems: "center" },
+  outText: { color: colors.danger, fontWeight: "700" },
 });

@@ -6,16 +6,18 @@ import {
   ScrollView,
   TouchableOpacity,
   StyleSheet,
-  ActivityIndicator,
   KeyboardAvoidingView,
   Platform,
   Image,
 } from "react-native";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 import * as ImagePicker from "expo-image-picker";
 import { api } from "../api";
 import { colors } from "../theme";
+import GradientButton from "../components/GradientButton";
 
 export default function CreateScreen() {
+  const insets = useSafeAreaInsets();
   const [url, setUrl] = useState("");
   const [text, setText] = useState("");
   const [image, setImage] = useState(null);
@@ -51,9 +53,7 @@ export default function CreateScreen() {
     const { ok, status: s, data } = await api.generate(payload);
     setLoading(false);
     if (s === 402)
-      return setStatus(
-        `Not enough credits — needs ${data.creditsNeeded}, you have ${data.creditsRemaining}.`,
-      );
+      return setStatus(`Not enough credits — needs ${data.creditsNeeded}, you have ${data.creditsRemaining}.`);
     if (!ok) return setStatus(data.error || "Something went wrong.");
     setResult(data);
     setStatus(
@@ -77,14 +77,19 @@ export default function CreateScreen() {
       style={{ flex: 1, backgroundColor: colors.bg }}
       behavior={Platform.OS === "ios" ? "padding" : undefined}
     >
-      <ScrollView contentContainerStyle={styles.scroll} keyboardShouldPersistTaps="handled">
+      <ScrollView
+        contentContainerStyle={[styles.scroll, { paddingTop: insets.top + 14, paddingBottom: 130 }]}
+        keyboardShouldPersistTaps="handled"
+        showsVerticalScrollIndicator={false}
+      >
+        <Text style={styles.brand}>NOTEJET</Text>
         <Text style={styles.h1}>Make study notes</Text>
         <Text style={styles.sub}>Paste a link, drop in text, or pick a screenshot.</Text>
 
         <TextInput
           style={styles.input}
           placeholder="YouTube or article link"
-          placeholderTextColor={colors.muted}
+          placeholderTextColor={colors.faint}
           value={url}
           onChangeText={setUrl}
           autoCapitalize="none"
@@ -93,25 +98,19 @@ export default function CreateScreen() {
         <TextInput
           style={[styles.input, styles.textarea]}
           placeholder="…or paste a transcript / notes"
-          placeholderTextColor={colors.muted}
+          placeholderTextColor={colors.faint}
           value={text}
           onChangeText={setText}
           multiline
         />
-        <TouchableOpacity style={styles.imgBtn} onPress={pickImage}>
+        <TouchableOpacity style={styles.imgBtn} onPress={pickImage} activeOpacity={0.8}>
           <Text style={styles.imgBtnText}>
-            {image ? "✓ Screenshot selected — tap to change" : "📷  Pick a screenshot"}
+            {image ? "✓ Screenshot selected — tap to change" : "＋  Pick a screenshot"}
           </Text>
         </TouchableOpacity>
         {image && <Image source={{ uri: image.uri }} style={styles.preview} resizeMode="cover" />}
 
-        <TouchableOpacity style={styles.cta} onPress={run} disabled={loading} activeOpacity={0.85}>
-          {loading ? (
-            <ActivityIndicator color="#fff" />
-          ) : (
-            <Text style={styles.ctaText}>Generate notes & quiz</Text>
-          )}
-        </TouchableOpacity>
+        <GradientButton title="Generate notes & quiz" onPress={run} loading={loading} style={{ marginTop: 4 }} />
         {!!status && <Text style={styles.status}>{status}</Text>}
 
         {result && (
@@ -119,7 +118,7 @@ export default function CreateScreen() {
             <Text style={styles.title}>{result.title}</Text>
             {result.notes?.map((n, i) => (
               <View key={i} style={styles.noteRow}>
-                <Text style={styles.dot}>•</Text>
+                <View style={styles.dot} />
                 <Text style={styles.note}>{n}</Text>
               </View>
             ))}
@@ -138,8 +137,8 @@ export default function CreateScreen() {
                 )}
               </View>
             ))}
-            <TouchableOpacity style={styles.saveBtn} onPress={save}>
-              <Text style={styles.saveText}>💾  Save to Decks</Text>
+            <TouchableOpacity style={styles.saveBtn} onPress={save} activeOpacity={0.8}>
+              <Text style={styles.saveText}>Save to Decks</Text>
             </TouchableOpacity>
           </View>
         )}
@@ -149,15 +148,16 @@ export default function CreateScreen() {
 }
 
 const styles = StyleSheet.create({
-  scroll: { padding: 18, paddingBottom: 48 },
-  h1: { fontSize: 26, fontWeight: "800", color: colors.text },
-  sub: { fontSize: 15, color: colors.muted, marginTop: 4, marginBottom: 18 },
+  scroll: { paddingHorizontal: 18 },
+  brand: { color: colors.violet, fontWeight: "800", fontSize: 12, letterSpacing: 3, marginBottom: 6 },
+  h1: { fontSize: 30, fontWeight: "800", color: colors.text, letterSpacing: -0.5 },
+  sub: { fontSize: 15, color: colors.muted, marginTop: 6, marginBottom: 20 },
   input: {
     backgroundColor: colors.card,
     borderWidth: 1,
-    borderColor: colors.line,
-    borderRadius: 12,
-    padding: 14,
+    borderColor: colors.cardBorder,
+    borderRadius: 14,
+    padding: 15,
     fontSize: 15,
     color: colors.text,
     marginBottom: 10,
@@ -167,55 +167,39 @@ const styles = StyleSheet.create({
     backgroundColor: colors.card,
     borderWidth: 1,
     borderStyle: "dashed",
-    borderColor: colors.line,
-    borderRadius: 12,
+    borderColor: colors.cardBorder,
+    borderRadius: 14,
     padding: 16,
     alignItems: "center",
     marginBottom: 14,
   },
-  imgBtnText: { color: colors.text, fontWeight: "600" },
-  preview: { width: "100%", height: 160, borderRadius: 12, marginBottom: 14 },
-  cta: {
-    backgroundColor: colors.indigo,
-    borderRadius: 14,
-    paddingVertical: 15,
-    alignItems: "center",
-    shadowColor: colors.indigo,
-    shadowOpacity: 0.3,
-    shadowRadius: 12,
-    shadowOffset: { width: 0, height: 6 },
-  },
-  ctaText: { color: "#fff", fontWeight: "700", fontSize: 16 },
-  status: { color: colors.muted, fontSize: 14, marginTop: 12, textAlign: "center" },
+  imgBtnText: { color: colors.muted, fontWeight: "600" },
+  preview: { width: "100%", height: 170, borderRadius: 14, marginBottom: 14 },
+  status: { color: colors.muted, fontSize: 14, marginTop: 14, textAlign: "center" },
   result: {
     backgroundColor: colors.card,
     borderWidth: 1,
-    borderColor: colors.line,
-    borderRadius: 16,
+    borderColor: colors.cardBorder,
+    borderRadius: 18,
     padding: 18,
-    marginTop: 18,
+    marginTop: 20,
   },
-  title: { fontSize: 19, fontWeight: "800", color: colors.text, marginBottom: 12 },
-  noteRow: { flexDirection: "row", marginBottom: 8 },
-  dot: { color: colors.indigo, fontSize: 16, marginRight: 8, lineHeight: 22 },
+  title: { fontSize: 20, fontWeight: "800", color: colors.text, marginBottom: 14 },
+  noteRow: { flexDirection: "row", marginBottom: 10, alignItems: "flex-start" },
+  dot: { width: 7, height: 7, borderRadius: 4, backgroundColor: colors.violet, marginTop: 7, marginRight: 12 },
   note: { flex: 1, fontSize: 15, color: colors.text, lineHeight: 22 },
-  quizLabel: { color: colors.pink, fontWeight: "800", fontSize: 12, marginTop: 14, marginBottom: 8 },
-  qCard: {
-    backgroundColor: colors.bg,
-    borderRadius: 12,
-    padding: 12,
-    marginBottom: 8,
-  },
-  q: { fontSize: 15, fontWeight: "600", color: colors.text, marginBottom: 6 },
+  quizLabel: { color: colors.pink, fontWeight: "800", fontSize: 12, letterSpacing: 1.5, marginTop: 16, marginBottom: 10 },
+  qCard: { backgroundColor: colors.bgElev, borderRadius: 14, padding: 14, marginBottom: 10 },
+  q: { fontSize: 15, fontWeight: "600", color: colors.text, marginBottom: 8, lineHeight: 21 },
   a: { fontSize: 15, color: colors.success, lineHeight: 21 },
-  reveal: { color: colors.indigo, fontWeight: "600" },
+  reveal: { color: colors.violet, fontWeight: "700" },
   saveBtn: {
     marginTop: 8,
     borderWidth: 1,
-    borderColor: colors.line,
-    borderRadius: 12,
-    paddingVertical: 12,
+    borderColor: colors.cardBorder,
+    borderRadius: 14,
+    paddingVertical: 14,
     alignItems: "center",
   },
-  saveText: { color: colors.text, fontWeight: "600" },
+  saveText: { color: colors.text, fontWeight: "700" },
 });
