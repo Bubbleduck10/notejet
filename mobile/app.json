@@ -10,7 +10,10 @@
     "newArchEnabled": true,
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "app.notejet"
+      "bundleIdentifier": "app.notejet",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
     },
     "android": {
       "package": "app.notejet",
@@ -37,6 +40,7 @@
       [
         "expo-share-intent",
         {
+          "disableExperimental": true,
           "iosActivationRules": {
             "NSExtensionActivationSupportsWebURLWithMaxCount": 1,
             "NSExtensionActivationSupportsWebPageWithMaxCount": 1,
@@ -50,7 +54,24 @@
     ],
     "extra": {
       "eas": {
-        "projectId": "20bd14f0-b69a-4059-bbf6-a0a8bfcc30a4"
+        "projectId": "20bd14f0-b69a-4059-bbf6-a0a8bfcc30a4",
+        "build": {
+          "experimental": {
+            "ios": {
+              "appExtensions": [
+                {
+                  "targetName": "ShareExtension",
+                  "bundleIdentifier": "app.notejet.share-extension",
+                  "entitlements": {
+                    "com.apple.security.application-groups": [
+                      "group.app.notejet"
+                    ]
+                  }
+                }
+              ]
+            }
+          }
+        }
       }
     }
   }
