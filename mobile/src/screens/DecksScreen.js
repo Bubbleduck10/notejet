@@ -4,16 +4,20 @@ import { View, Text, ScrollView, TouchableOpacity, StyleSheet, ActivityIndicator
 import { useSafeAreaInsets } from "react-native-safe-area-context";
 import { api } from "../api";
 import { colors } from "../theme";
+import StudySession from "../components/StudySession";
+import GradientButton from "../components/GradientButton";
 
 export default function DecksScreen() {
   const insets = useSafeAreaInsets();
   const [decks, setDecks] = useState(null);
   const [selected, setSelected] = useState(null);
   const [revealed, setRevealed] = useState({});
+  const [studying, setStudying] = useState(false);
   const [status, setStatus] = useState("");
 
   const load = useCallback(async () => {
     setSelected(null);
+    setStudying(false);
     setDecks(null);
     const { ok, data } = await api.listDecks();
     setDecks(ok ? data.decks || [] : []);
@@ -40,6 +44,16 @@ export default function DecksScreen() {
   const fmt = (s) => new Date(s).toLocaleDateString(undefined, { month: "short", day: "numeric" });
   const pad = { paddingTop: insets.top + 14, paddingBottom: 130 };
 
+  if (selected && studying) {
+    return (
+      <StudySession
+        title={selected.title}
+        quiz={selected.quiz || []}
+        onExit={() => setStudying(false)}
+      />
+    );
+  }
+
   if (selected) {
     return (
       <ScrollView
@@ -51,6 +65,13 @@ export default function DecksScreen() {
           <Text style={styles.back}>‹  All decks</Text>
         </TouchableOpacity>
         <Text style={styles.title}>{selected.title}</Text>
+        {selected.quiz?.length > 0 && (
+          <GradientButton
+            title={`▶  Study ${selected.quiz.length} cards`}
+            onPress={() => setStudying(true)}
+            style={{ marginBottom: 18 }}
+          />
+        )}
         {selected.notes?.map((n, i) => (
           <View key={i} style={styles.noteRow}>
             <View style={styles.dot} />
